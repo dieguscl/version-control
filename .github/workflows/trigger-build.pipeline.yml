@@ -13,13 +13,17 @@ jobs:
           build_number=$(cat BUILD_NUMBER)
           build_number=$((build_number + 1))
           echo "$build_number" > BUILD_NUMBER
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config --local user.name "github-actions"
+          git config --local user.email "actions@github.com"
           git add BUILD_NUMBER
           git commit -m "trigger build $build_number"
-          git push
         env:
           build_number: 0
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
 
   trigger-component-builds:
     runs-on: ubuntu-latest
