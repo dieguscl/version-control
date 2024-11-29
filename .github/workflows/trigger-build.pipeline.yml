@@ -6,16 +6,20 @@ on:
 jobs:
   set-build-number:
     runs-on: ubuntu-latest
+    outputs:
+      build_number: ${{ steps.increment-build.outputs.build_number }}
     steps:
       - uses: actions/checkout@v3
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
           fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
-      - name: Increment Build Number
+      - id: increment-build
+        name: Increment Build Number
         run: |
           build_number=$(cat BUILD_NUMBER)
           build_number=$((build_number + 1))
           echo "$build_number" > BUILD_NUMBER
+          echo "build_number=$build_number" >> $GITHUB_ENV
           git config --local user.name "github-actions"
           git config --local user.email "actions@github.com"
           git add BUILD_NUMBER
@@ -42,4 +46,6 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
           https://api.github.com/repos/dieguscl/${{ matrix.component }}/actions/workflows/build.yml/dispatches \
           -d '{"ref": "main", "inputs": {"build_number": "$build_number"}}'
+        env:
+          build_number: ${{ needs.set-build-number.outputs.build_number }}
 
