@@ -19,7 +19,7 @@ jobs:
           build_number=$(cat BUILD_NUMBER)
           build_number=$((build_number + 1))
           echo "$build_number" > BUILD_NUMBER
-          echo "build_number=$build_number" >> $GITHUB_ENV
+          echo "build_number=$build_number" >> $GITHUB_OUTPUT
           git config --local user.name "github-actions"
           git config --local user.email "actions@github.com"
           git add BUILD_NUMBER
@@ -45,6 +45,6 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
           https://api.github.com/repos/dieguscl/${{ matrix.component }}/actions/workflows/build.yml/dispatches \
-          -d '{"ref": "main", "inputs": {"build_number": "333"}}'
+          -d '{"ref": "main", "inputs": {"build_number": "${{ needs.set-build-number.outputs.build_number }}"}}'
 
 
