@@ -13,6 +13,8 @@ jobs:
           build_number=$(cat BUILD_NUMBER)
           build_number=$((build_number + 1))
           echo "$build_number" > BUILD_NUMBER
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
           git add BUILD_NUMBER
           git commit -m "trigger build $build_number"
           git push
